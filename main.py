@@ -8,7 +8,7 @@ from jinja2 import Template
 import time
 
 # --- НАСТРОЙКИ ---
-BOT_TOKEN = "ВАШ_ТОКЕН_БОТА_ЗДЕСЬ" 
+BOT_TOKEN = "8312115174:AAEVrID17hc68rmxKtAHEOk4ZYyExEpHfAs" 
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates"
 TELEGRAM_FILE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/getFile"
 TELEGRAM_FILE_PATH_URL = f"https://api.telegram.org/file/bot{BOT_TOKEN}/"
@@ -292,3 +292,4 @@ async def get_media(file_id: str):
 # --- ЗАПУСК ---
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
