@@ -8,6 +8,7 @@ import sqlite3
 import hashlib
 import pathlib
 import aiofiles
+import os
 from fastapi import FastAPI, Request, Response, Depends, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from contextlib import asynccontextmanager
@@ -18,26 +19,37 @@ from fastapi.staticfiles import StaticFiles
 # --- НАСТРОЙКИ ---
 BOT_TOKEN = "8312115174:AAEVrID17hc68rmxKtAHEOk4ZYyExEpHfAs"
 # ВАЖНО: Укажите ID вашего канала (напр., -100123456789) или @username
-TELEGRAM_NOTIFY_CHAT_ID = "3406683744" # <--- ОБЯЗАТЕЛЬНО ИЗМЕНИТЕ ЭТО
+TELEGRAM_NOTIFY_CHAT_ID = "3406683744" # <--- ОБНОВЛЕНО
 TELEGRAM_SEND_MESSAGE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
 # Настройки сайта
-DATABASE_FILE = "feed.db"
-UPLOADS_DIR = pathlib.Path("uploads")
+# Используем путь к "Disk" от Render, если он есть
+DATA_DIR = pathlib.Path(os.getenv("RENDER_DISK_MOUNT_PATH", "."))
+DATABASE_FILE = DATA_DIR / "feed.db"
+UPLOADS_DIR = DATA_DIR / "uploads"
 SESSION_DURATION = 86400 # 1 день
 SITE_URL = "https://vlasovbot.onrender.com/" # Используется для уведомлений
 
 # --- БАЗА ДАННЫХ ПОЛЬЗОВАТЕЛЕЙ (ВНУТРИ КОДА) ---
 # Добавьте сюда ваши пары логин:пароль
 USER_DB = {
-    "user": "test",
-    "admin": "root",
+    "user1": "pass1",
+    "user2": "pass2",
+    "user3": "pass3",
+    "demo": "demo123",
+    "member5": "securepass_5",
+    "alex": "python!@",
+    "subscriber7": "feed_access",
+    "admin": "admin_password_change_me",
+    "testuser": "testpass",
+    "user10": "pass10"
 }
 
 # --- АДМИНИСТРАТОРЫ САЙТА ---
 # Логины из USER_DB, которые получат доп. права
 ADMIN_USERS = [
     "admin", # Логин admin из USER_DB
+    "alex"   # Логин alex из USER_DB
 ]
 
 
@@ -174,7 +186,7 @@ def get_db():
 # --- ФУНКЦИЯ УВЕДОМЛЕНИЯ В TELEGRAM ---
 async def send_telegram_notification(text: str):
     """Отправляет уведомление в TG канал"""
-    if "-100123456789" in TELEGRAM_NOTIFY_CHAT_ID or "8312115174" not in BOT_TOKEN:
+    if "3406683744" not in TELEGRAM_NOTIFY_CHAT_ID or "8312115174" not in BOT_TOKEN:
         print("Уведомление не отправлено: не настроен CHAT_ID или BOT_TOKEN")
         return
 
@@ -1069,6 +1081,8 @@ async def delete_message(
 # --- ЗАПУСК ---
 if __name__ == "__main__":
     print("--- ЗАПУСК СЕРВЕРА (CMS-РЕЖИМ) ---")
-    print(f"Сервер будет доступен по адресу http://0.0.0.0:8000")
+    # Используем порт, который дает Render (или 8000 по умолчанию)
+    port = int(os.getenv("PORT", 8000))
+    print(f"Сервер будет доступен по адресу http://0.0.0.0:{port}")
     print(f"Убедитесь, что TELEGRAM_NOTIFY_CHAT_ID ('{TELEGRAM_NOTIFY_CHAT_ID}') указан верно.")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=port)
